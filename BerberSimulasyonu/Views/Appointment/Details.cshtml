@@ -1,0 +1,160 @@
+@model BerberSimulasyonu.Models.Appointment
+@{
+    ViewData["Title"] = "Randevu Detayları";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">Randevu Detayları</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Müşteri:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Customer.FullName (@Model.Customer.PhoneNumber)
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Hizmet:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Service.Name - @Model.Service.Category
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Randevu Tarihi:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.AppointmentDate.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Orijinal Fiyat:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.OriginalPrice.ToString("C")
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>İndirim:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @if (Model.DiscountPercentage > 0)
+                            {
+                                <span class="text-success">%@Model.DiscountPercentage (@Model.DiscountAmount.ToString("C"))</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Yok</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Final Fiyat:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            <span class="fs-5 text-success">@Model.FinalPrice.ToString("C")</span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Durum:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @if (Model.IsCompleted)
+                            {
+                                <span class="badge bg-success fs-6">Tamamlandı</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-warning fs-6">Beklemede</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(Model.Notes))
+                    {
+                        <div class="row mb-3">
+                            <div class="col-md-4">
+                                <strong>Notlar:</strong>
+                            </div>
+                            <div class="col-md-8">
+                                @Model.Notes
+                            </div>
+                        </div>
+                    }
+
+                    <div class="mt-4">
+                        @if (!Model.IsCompleted)
+                        {
+                            <form asp-action="Complete" asp-route-id="@Model.Id" method="post" style="display: inline;">
+                                <button type="submit" class="btn btn-success" onclick="return confirm('Randevuyu tamamlandı olarak işaretlemek istediğinize emin misiniz?')">
+                                    Tamamla
+                                </button>
+                            </form>
+                        }
+                        
+                        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Sil</a>
+                        <a asp-action="List" class="btn btn-secondary">Listeye Dön</a>
+                        <a asp-controller="Customer" asp-action="Details" asp-route-id="@Model.CustomerId" class="btn btn-info">Müşteri Detayı</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Müşteri Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    <p><strong>Ad Soyad:</strong> @Model.Customer.FullName</p>
+                    <p><strong>Telefon:</strong> @Model.Customer.PhoneNumber</p>
+                    <p><strong>Ziyaret Sayısı:</strong> 
+                        <span class="badge @(Model.Customer.VisitCount >= 31 ? "bg-success" : Model.Customer.VisitCount >= 11 ? "bg-warning" : "bg-secondary")">
+                            @Model.Customer.VisitCount
+                        </span>
+                    </p>
+                    <p><strong>İndirim Durumu:</strong>
+                        @if (Model.Customer.VisitCount >= 31)
+                        {
+                            <span class="text-success">%20 indirim hakkı</span>
+                        }
+                        else if (Model.Customer.VisitCount >= 11)
+                        {
+                            <span class="text-warning">%10 indirim hakkı</span>
+                        }
+                        else
+                        {
+                            <span class="text-muted">İndirim hakkı yok</span>
+                        }
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

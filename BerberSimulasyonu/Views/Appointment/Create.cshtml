@@ -1,0 +1,157 @@
+@model BerberSimulasyonu.Models.Appointment
+@{
+    ViewData["Title"] = "Yeni Randevu";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">Yeni Randevu Oluştur</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="CustomerId" class="form-label">Müşteri</label>
+                                    <select asp-for="CustomerId" class="form-select" id="customerSelect">
+                                        <option value="">Müşteri Seçin...</option>
+                                        @foreach (var customer in ViewBag.Customers)
+                                        {
+                                            <option value="@customer.Id" data-visit-count="@customer.VisitCount">
+                                                @customer.FullName (@customer.PhoneNumber) - Ziyaret: @customer.VisitCount
+                                            </option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="CustomerId" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="ServiceId" class="form-label">Hizmet</label>
+                                    <select asp-for="ServiceId" class="form-select" id="serviceSelect">
+                                        <option value="">Hizmet Seçin...</option>
+                                        @foreach (var service in ViewBag.Services)
+                                        {
+                                            <option value="@service.Id" data-price="@service.Price" data-category="@service.Category">
+                                                @service.Name - @service.Price.ToString("C") (@service.Category)
+                                            </option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="ServiceId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="AppointmentDate" class="form-label">Randevu Tarihi</label>
+                                    <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
+                                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Fiyat Hesaplaması</label>
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex justify-content-between">
+                                                <span>Orijinal Fiyat:</span>
+                                                <span id="originalPrice">-</span>
+                                            </div>
+                                            <div class="d-flex justify-content-between">
+                                                <span>İndirim:</span>
+                                                <span id="discount">-</span>
+                                            </div>
+                                            <hr class="my-1">
+                                            <div class="d-flex justify-content-between">
+                                                <strong>Final Fiyat:</strong>
+                                                <strong id="finalPrice">-</strong>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Notes" class="form-label">Notlar (Opsiyonel)</label>
+                            <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="Notes" class="text-danger"></span>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="List" class="btn btn-secondary">Listeye Dön</a>
+                            <button type="submit" class="btn btn-success">Randevu Oluştur</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        $(document).ready(function() {
+            function calculatePrice() {
+                var customerId = $('#customerSelect').val();
+                var serviceId = $('#serviceSelect').val();
+                
+                if (customerId && serviceId) {
+                    var customerOption = $('#customerSelect option:selected');
+                    var serviceOption = $('#serviceSelect option:selected');
+                    var visitCount = parseInt(customerOption.data('visit-count'));
+                    var originalPrice = parseFloat(serviceOption.data('price'));
+                    
+                    var discountPercentage = 0;
+                    if (visitCount >= 31) {
+                        discountPercentage = 20;
+                    } else if (visitCount >= 11) {
+                        discountPercentage = 10;
+                    }
+                    
+                    var discountAmount = originalPrice * (discountPercentage / 100);
+                    var finalPrice = originalPrice - discountAmount;
+                    
+                    $('#originalPrice').text('₺' + originalPrice.toFixed(2));
+                    $('#discount').text('%' + discountPercentage + ' (₺' + discountAmount.toFixed(2) + ')');
+                    $('#finalPrice').text('₺' + finalPrice.toFixed(2));
+                    
+                    if (discountPercentage > 0) {
+                        $('#discount').addClass('text-success');
+                        $('#finalPrice').addClass('text-success');
+                    } else {
+                        $('#discount').removeClass('text-success');
+                        $('#finalPrice').removeClass('text-success');
+                    }
+                } else {
+                    $('#originalPrice').text('-');
+                    $('#discount').text('-');
+                    $('#finalPrice').text('-');
+                }
+            }
+            
+            $('#customerSelect, #serviceSelect').change(calculatePrice);
+            
+            // Set default datetime to current time
+            var now = new Date();
+            now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+            $('#AppointmentDate').val(now.toISOString().slice(0,16));
+        });
+    </script>
+}

@@ -1,0 +1,63 @@
+@model BerberSimulasyonu.Models.Appointment
+@{
+    ViewData["Title"] = "Randevu Sil";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Randevu Sil</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="text-danger">Bu randevuyu silmek istediğinize emin misiniz?</h5>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Müşteri:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Customer.FullName
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Hizmet:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Service.Name
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Tarih:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.AppointmentDate.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Final Fiyat:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.FinalPrice.ToString("C")
+                        </div>
+                    </div>
+
+                    <form asp-action="DeleteConfirmed" method="post">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">İptal</a>
+                            <button type="submit" class="btn btn-danger">Sil</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

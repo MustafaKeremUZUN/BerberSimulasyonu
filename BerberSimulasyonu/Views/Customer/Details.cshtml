@@ -1,0 +1,154 @@
+@model BerberSimulasyonu.Models.Customer
+@{
+    ViewData["Title"] = "Müşteri Detayları";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Müşteri Detayları</h4>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Ad Soyad:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.FullName
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Telefon:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.PhoneNumber
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>E-posta:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.Email ?? "Belirtilmemiş"
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Kayıt Tarihi:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            @Model.CreatedDate.ToString("dd.MM.yyyy HH:mm")
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <strong>Ziyaret Sayısı:</strong>
+                        </div>
+                        <div class="col-md-8">
+                            <span class="badge @(Model.VisitCount >= 31 ? "bg-success" : Model.VisitCount >= 11 ? "bg-warning" : "bg-secondary")">
+                                @Model.VisitCount
+                            </span>
+                            @if (Model.VisitCount >= 31)
+                            {
+                                <span class="text-success ms-2">(%20 indirim hakkı)</span>
+                            }
+                            else if (Model.VisitCount >= 11)
+                            {
+                                <span class="text-warning ms-2">(%10 indirim hakkı)</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted ms-2">(İndirim yok)</span>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+                        <a asp-action="Create" asp-controller="Appointment" asp-route-customerId="@Model.Id" class="btn btn-success">Yeni Randevu</a>
+                        <a asp-action="List" class="btn btn-secondary">Listeye Dön</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.Appointments != null && Model.Appointments.Any())
+    {
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">Randevu Geçmişi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Hizmet</th>
+                                        <th>Orijinal Fiyat</th>
+                                        <th>İndirim</th>
+                                        <th>Final Fiyat</th>
+                                        <th>Durum</th>
+                                        <th>İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate))
+                                    {
+                                        <tr>
+                                            <td>@appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@appointment.Service.Name</td>
+                                            <td>@appointment.OriginalPrice.ToString("C")</td>
+                                            <td>
+                                                @if (appointment.DiscountPercentage > 0)
+                                                {
+                                                    <span class="text-success">%@appointment.DiscountPercentage</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">Yok</span>
+                                                }
+                                            </td>
+                                            <td><strong>@appointment.FinalPrice.ToString("C")</strong></td>
+                                            <td>
+                                                @if (appointment.IsCompleted)
+                                                {
+                                                    <span class="badge bg-success">Tamamlandı</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">Beklemede</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                <a asp-controller="Appointment" asp-action="Details" asp-route-id="@appointment.Id" class="btn btn-sm btn-info">Detay</a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

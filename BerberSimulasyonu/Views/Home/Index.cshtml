@@ -1,8 +1,170 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model BerberSimulasyonu.Controllers.DashboardViewModel
+@{
+    ViewData["Title"] = "Berber Simülasyonu - Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="text-center mb-4">Berber Simülasyon Sistemi</h1>
+            <p class="text-center text-muted">Müşteri yönetimi, randevu takibi ve dinamik fiyatlandırma sistemi</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Müşteri</h5>
+                    <h2 class="card-text">@Model.TotalCustomers</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Randevu</h5>
+                    <h2 class="card-text">@Model.TotalAppointments</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Gelir</h5>
+                    <h2 class="card-text">@Model.TotalRevenue.ToString("C")</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body">
+                    <h5 class="card-title">Bekleyen Randevu</h5>
+                    <h2 class="card-text">@Model.PendingAppointments</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Hızlı İşlemler</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a asp-controller="Customer" asp-action="Register" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-person-plus"></i> Yeni Müşteri
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-controller="Appointment" asp-action="Create" class="btn btn-success btn-lg w-100">
+                                <i class="bi bi-calendar-plus"></i> Yeni Randevu
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-controller="Customer" asp-action="List" class="btn btn-info btn-lg w-100">
+                                <i class="bi bi-people"></i> Müşteriler
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a asp-controller="Appointment" asp-action="List" class="btn btn-warning btn-lg w-100">
+                                <i class="bi bi-calendar-check"></i> Randevular
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Recent Appointments -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Son Randevular</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentAppointments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Müşteri</th>
+                                        <th>Hizmet</th>
+                                        <th>Tarih</th>
+                                        <th>Fiyat</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.RecentAppointments)
+                                    {
+                                        <tr>
+                                            <td>@appointment.Customer.FullName</td>
+                                            <td>@appointment.Service.Name</td>
+                                            <td>@appointment.AppointmentDate.ToString("dd.MM HH:mm")</td>
+                                            <td>@appointment.FinalPrice.ToString("C")</td>
+                                            <td>
+                                                @if (appointment.IsCompleted)
+                                                {
+                                                    <span class="badge bg-success">Tamamlandı</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">Beklemede</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Henüz randevu bulunmuyor.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Customers -->
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">En Çok Ziyaret Eden Müşteriler</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.TopCustomers.Any())
+                    {
+                        @foreach (var customer in Model.TopCustomers)
+                        {
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <strong>@customer.FullName</strong><br>
+                                    <small class="text-muted">@customer.PhoneNumber</small>
+                                </div>
+                                <div>
+                                    <span class="badge @(customer.VisitCount >= 31 ? "bg-success" : customer.VisitCount >= 11 ? "bg-warning" : "bg-secondary")">
+                                        @customer.VisitCount ziyaret
+                                    </span>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p class="text-muted">Henüz müşteri bulunmuyor.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
