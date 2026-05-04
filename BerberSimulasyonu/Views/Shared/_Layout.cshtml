@@ -40,6 +40,17 @@
                                 <li><a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="List">Randevu Listesi</a></li>
                             </ul>
                         </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown3" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Çalışanlar
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown3">
+                                <li><a class="dropdown-item" asp-area="" asp-controller="EmployeeApplication" asp-action="Create">📝 İş Başvurusu Yap</a></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="EmployeeApplication" asp-action="Index">📋 Başvurular</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" asp-area="" asp-controller="Employee" asp-action="Index">👥 Çalışan Listesi</a></li>
+                            </ul>
+                        </li>
                     </ul>
                 </div>
             </div>

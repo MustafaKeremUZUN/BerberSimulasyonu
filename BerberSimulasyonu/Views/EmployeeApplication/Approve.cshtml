@@ -1,0 +1,85 @@
+@model BerberSimulasyonu.Models.EmployeeApplication
+@{
+    ViewData["Title"] = "Başvuruyu Onayla";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">✅ Başvuruyu Onayla</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Dikkat:</strong> Bu başvuruyu onayladığınızda başvuran kişi sistemde çalışan olarak eklenecektir. 
+                        Bu işlem geri alınamaz.
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>👤 Başvuran Bilgileri</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Ad Soyad:</strong></td>
+                                    <td>@Model.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Telefon:</strong></td>
+                                    <td>@Model.PhoneNumber</td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(Model.Email))
+                                {
+                                    <tr>
+                                        <td><strong>E-posta:</strong></td>
+                                        <td>@Model.Email</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td><strong>İstediği Pozisyon:</strong></td>
+                                    <td>@Model.DesiredPosition</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ücret Beklentisi:</strong></td>
+                                    <td>@Model.DesiredHourlyRate.ToString("C")/saat</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>📊 Quiz Sonuçları</h6>
+                            <div class="text-center">
+                                <div class="badge @(Model.CorrectAnswers >= 3 ? "bg-success" : "bg-danger") fs-4 mb-2">
+                                    @Model.CorrectAnswers/@Model.TotalQuestions Doğru
+                                </div>
+                                <div class="text-muted">
+                                    Başarı Oranı: @Model.QuizScore.ToString("F1")%
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Experience))
+                            {
+                                <div class="mt-3">
+                                    <h6>Deneyimler:</h6>
+                                    <p class="small">@Model.Experience</p>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <form asp-action="ApproveConfirmed" method="post">
+                        <input type="hidden" name="id" value="@Model.Id" />
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> İptal
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-check"></i> Başvuruyu Onayla ve Çalışanı Ekle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

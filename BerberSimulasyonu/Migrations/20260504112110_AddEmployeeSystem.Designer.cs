@@ -4,6 +4,7 @@ using BerberSimulasyonu.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BerberSimulasyonu.Migrations
 {
     [DbContext(typeof(BerberDbContext))]
-    partial class BerberDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260504112110_AddEmployeeSystem")]
+    partial class AddEmployeeSystem
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,226 +187,49 @@ namespace BerberSimulasyonu.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Employees");
-                });
-
-            modelBuilder.Entity("BerberSimulasyonu.Models.EmployeeApplication", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("ApplicationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("CorrectAnswers")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("DesiredHourlyRate")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("DesiredPosition")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("Email")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<int?>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Experience")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<string>("QuizAnswers")
-                        .HasMaxLength(2000)
-                        .HasColumnType("nvarchar(2000)");
-
-                    b.Property<decimal>("QuizScore")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<string>("ReviewNotes")
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<DateTime?>("ReviewedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Status")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<int>("TotalQuestions")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId")
-                        .IsUnique()
-                        .HasFilter("[EmployeeId] IS NOT NULL");
-
-                    b.ToTable("EmployeeApplications");
-                });
-
-            modelBuilder.Entity("BerberSimulasyonu.Models.QuizQuestion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Category")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.Property<string>("CorrectOption")
-                        .IsRequired()
-                        .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)");
-
-                    b.Property<DateTime>("CreatedDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime2")
-                        .HasDefaultValueSql("GETDATE()");
-
-                    b.Property<int>("Difficulty")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Explanation")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<string>("OptionA")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("OptionB")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("OptionC")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("OptionD")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("QuizQuestions");
 
                     b.HasData(
                         new
                         {
                             Id = 1,
-                            Category = "Saç Kesimi",
-                            CorrectOption = "A",
-                            CreatedDate = new DateTime(2026, 5, 4, 14, 54, 24, 293, DateTimeKind.Local).AddTicks(7084),
-                            Difficulty = 1,
-                            Explanation = "Klasik erkek saç kesiminde genellikle 3-4 numara makine başlığı kullanılır.",
+                            DefaultWorkEnd = new TimeSpan(0, 18, 0, 0, 0),
+                            DefaultWorkStart = new TimeSpan(0, 9, 0, 0, 0),
+                            Email = "ahmet@berber.com",
+                            FirstName = "Ahmet",
+                            HireDate = new DateTime(2023, 5, 4, 14, 21, 8, 812, DateTimeKind.Local).AddTicks(3152),
+                            HourlyRate = 150m,
                             IsActive = true,
-                            OptionA = "3-4 numara",
-                            OptionB = "1-2 numara",
-                            OptionC = "6-8 numara",
-                            OptionD = "9-12 numara",
-                            Question = "Makine ile saç kesiminde genellikle hangi numara makine başlığı kullanılır?"
+                            LastName = "Yılmaz",
+                            PhoneNumber = "05321234567",
+                            Position = "Usta Berber"
                         },
                         new
                         {
                             Id = 2,
-                            Category = "Sakal",
-                            CorrectOption = "A",
-                            CreatedDate = new DateTime(2026, 5, 4, 14, 54, 24, 293, DateTimeKind.Local).AddTicks(7104),
-                            Difficulty = 1,
-                            Explanation = "Sıcak havlu uygulaması sakalları yumuşatır ve cildi tıraşa hazırlar.",
+                            DefaultWorkEnd = new TimeSpan(0, 18, 0, 0, 0),
+                            DefaultWorkStart = new TimeSpan(0, 9, 0, 0, 0),
+                            Email = "mehmet@berber.com",
+                            FirstName = "Mehmet",
+                            HireDate = new DateTime(2024, 5, 4, 14, 21, 8, 812, DateTimeKind.Local).AddTicks(3163),
+                            HourlyRate = 120m,
                             IsActive = true,
-                            OptionA = "Sıcak havlu uygulaması",
-                            OptionB = "Soğuk su ile yıkama",
-                            OptionC = "Kuru tıraş",
-                            OptionD = "Jilet direkt uygulanır",
-                            Question = "Sakal traşı öncesi cildi hazırlamak için en iyi yöntem nedir?"
+                            LastName = "Kaya",
+                            PhoneNumber = "05327654321",
+                            Position = "Berber"
                         },
                         new
                         {
                             Id = 3,
-                            Category = "Hijyen",
-                            CorrectOption = "A",
-                            CreatedDate = new DateTime(2026, 5, 4, 14, 54, 24, 293, DateTimeKind.Local).AddTicks(7107),
-                            Difficulty = 1,
-                            Explanation = "Hijyen için her müşteri için temiz ve steril malzeme kullanmak esastır.",
+                            DefaultWorkEnd = new TimeSpan(0, 18, 0, 0, 0),
+                            DefaultWorkStart = new TimeSpan(0, 9, 0, 0, 0),
+                            Email = "ali@berber.com",
+                            FirstName = "Ali",
+                            HireDate = new DateTime(2025, 11, 4, 14, 21, 8, 812, DateTimeKind.Local).AddTicks(3169),
+                            HourlyRate = 80m,
                             IsActive = true,
-                            OptionA = "Her müşteri için temiz malzeme kullanmak",
-                            OptionB = "Hızlı çalışmak",
-                            OptionC = "Pahalı ürünler kullanmak",
-                            OptionD = "Dükkanı süslemek",
-                            Question = "Berber dükkanında hijyen için en önemli kural nedir?"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Category = "Saç Boyama",
-                            CorrectOption = "A",
-                            CreatedDate = new DateTime(2026, 5, 4, 14, 54, 24, 293, DateTimeKind.Local).AddTicks(7110),
-                            Difficulty = 2,
-                            Explanation = "Saç boyası genellikle 30-45 dakika etkisini gösterir.",
-                            IsActive = true,
-                            OptionA = "30-45 dakika",
-                            OptionB = "5-10 dakika",
-                            OptionC = "2-3 saat",
-                            OptionD = "Hemen durulayabilir",
-                            Question = "Saç boyama işlemi sonrasında ne kadar beklemek gerekir?"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Category = "Sakal",
-                            CorrectOption = "A",
-                            CreatedDate = new DateTime(2026, 5, 4, 14, 54, 24, 293, DateTimeKind.Local).AddTicks(7112),
-                            Difficulty = 2,
-                            Explanation = "Jilet ile tıraşta genellikle 30 derecelik açı kullanılır.",
-                            IsActive = true,
-                            OptionA = "30 derece",
-                            OptionB = "90 derece",
-                            OptionC = "45 derece",
-                            OptionD = "15 derece",
-                            Question = "Jilet ile tıraşta en sık kullanılan açı nedir?"
+                            LastName = "Demir",
+                            PhoneNumber = "05339876543",
+                            Position = "Çırak"
                         });
                 });
 
@@ -547,16 +373,6 @@ namespace BerberSimulasyonu.Migrations
                     b.Navigation("Employee");
 
                     b.Navigation("Service");
-                });
-
-            modelBuilder.Entity("BerberSimulasyonu.Models.EmployeeApplication", b =>
-                {
-                    b.HasOne("BerberSimulasyonu.Models.Employee", "Employee")
-                        .WithOne()
-                        .HasForeignKey("BerberSimulasyonu.Models.EmployeeApplication", "EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("BerberSimulasyonu.Models.Customer", b =>

@@ -1,0 +1,195 @@
+@model BerberSimulasyonu.Models.EmployeeApplication
+@{
+    ViewData["Title"] = "Başvuru Detayları";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">📋 Başvuru Detayları - @Model.FullName</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Başvuru Durumu -->
+                    <div class="alert alert-@(Model.Status == ApplicationStatus.Approved ? "success" : Model.Status == ApplicationStatus.Rejected ? "danger" : "warning")">
+                        <h6 class="mb-2">Başvuru Durumu</h6>
+                        @switch (Model.Status)
+                        {
+                            case ApplicationStatus.Pending:
+                                <span class="badge bg-warning fs-6">Beklemede</span>
+                                break;
+                            case ApplicationStatus.Approved:
+                                <span class="badge bg-success fs-6">✅ Onaylandı</span>
+                                break;
+                            case ApplicationStatus.Rejected:
+                                <span class="badge bg-danger fs-6">❌ Reddedildi</span>
+                                break;
+                            case ApplicationStatus.Withdrawn:
+                                <span class="badge bg-secondary fs-6">Çekildi</span>
+                                break;
+                        }
+                        
+                        @if (Model.ReviewedDate.HasValue)
+                        {
+                            <div class="mt-2">
+                                <small><strong>Değerlendirme Tarihi:</strong> @Model.ReviewedDate.Value.ToString("dd.MM.yyyy HH:mm")</small>
+                            </div>
+                        }
+                        
+                        @if (!string.IsNullOrEmpty(Model.ReviewNotes))
+                        {
+                            <div class="mt-2">
+                                <small><strong>Değerlendirme Notları:</strong> @Model.ReviewNotes</small>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Kişisel Bilgiler -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5><i class="fas fa-user"></i> Kişisel Bilgiler</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Ad Soyad:</strong></td>
+                                    <td>@Model.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Telefon:</strong></td>
+                                    <td>@Model.PhoneNumber</td>
+                                </tr>
+                                @if (!string.IsNullOrEmpty(Model.Email))
+                                {
+                                    <tr>
+                                        <td><strong>E-posta:</strong></td>
+                                        <td>@Model.Email</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>İstediği Pozisyon:</strong></td>
+                                    <td>@Model.DesiredPosition</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Ücret Beklentisi:</strong></td>
+                                    <td>@Model.DesiredHourlyRate.ToString("C")/saat</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Başvuru Tarihi:</strong></td>
+                                    <td>@Model.ApplicationDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Deneyim -->
+                    @if (!string.IsNullOrEmpty(Model.Experience))
+                    {
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5><i class="fas fa-briefcase"></i> Deneyimler</h5>
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <p>@Model.Experience</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Quiz Sonuçları -->
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <h5><i class="fas fa-question-circle"></i> Quiz Sonuçları</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="card text-center @(Model.CorrectAnswers >= 3 ? "bg-success text-white" : "bg-danger text-white")">
+                                        <div class="card-body">
+                                            <h3 class="card-title">@Model.CorrectAnswers/@Model.TotalQuestions</h3>
+                                            <p class="card-text">Doğru Cevap</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card text-center bg-info text-white">
+                                        <div class="card-body">
+                                            <h3 class="card-title">@Model.QuizScore.ToString("F1")%</h3>
+                                            <p class="card-text">Başarı Oranı</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title">Değerlendirme</h6>
+                                            @if (Model.CorrectAnswers >= 3)
+                                            {
+                                                <p class="card-text text-success">
+                                                    <i class="fas fa-check-circle"></i> Quiz testini başarıyla geçti.
+                                                </p>
+                                            }
+                                            else
+                                            {
+                                                <p class="card-text text-danger">
+                                                    <i class="fas fa-times-circle"></i> Quiz testini geçemedi (minimum 3 doğru gerekli).
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- İşlemler -->
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Listeye Geri Dön
+                        </a>
+                        <div>
+                            @if (Model.Status == ApplicationStatus.Pending)
+                            {
+                                <a asp-action="Approve" asp-route-id="@Model.Id" class="btn btn-success me-2">
+                                    <i class="fas fa-check"></i> Onayla
+                                </a>
+                                <a asp-action="Reject" asp-route-id="@Model.Id" class="btn btn-danger me-2">
+                                    <i class="fas fa-times"></i> Reddet
+                                </a>
+                            }
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger">
+                                <i class="fas fa-trash"></i> Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Çalışan Bilgisi (Eğer onaylandıysa) -->
+        @if (Model.Employee != null)
+        {
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">👔 Çalışan Bilgileri</h6>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Çalışan ID:</strong> #@Model.Employee.Id</p>
+                        <p><strong>İşe Başlama:</strong> @Model.Employee.HireDate.ToString("dd.MM.yyyy")</p>
+                        <p><strong>Durum:</strong> <span class="badge bg-success">Aktif</span></p>
+                        <div class="mt-3">
+                            <a asp-controller="Employee" asp-action="Details" asp-route-id="@Model.Employee.Id" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-user"></i> Çalışan Profili
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

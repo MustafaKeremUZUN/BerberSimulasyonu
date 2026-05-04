@@ -18,7 +18,8 @@ namespace BerberSimulasyonu.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Customers = await _context.Customers
-                .OrderByDescending(c => c.CreatedDate)
+                .OrderBy(c => c.LastName)
+                .ThenBy(c => c.FirstName)
                 .ToListAsync();
             
             ViewBag.Services = await _context.Services
@@ -26,25 +27,44 @@ namespace BerberSimulasyonu.Controllers
                 .OrderBy(s => s.Category)
                 .ThenBy(s => s.Name)
                 .ToListAsync();
-
+            
+            ViewBag.Employees = await _context.Employees
+                .Where(e => e.IsActive)
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+            
             return View();
         }
 
         // POST: Appointment/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("CustomerId,ServiceId,AppointmentDate,Notes")] Appointment appointment)
+        public async Task<IActionResult> Create([Bind("CustomerId,ServiceId,EmployeeId,AppointmentDate,Notes")] Appointment appointment)
         {
             if (ModelState.IsValid)
             {
-                // Get customer and service information
+                // Get customer, service and employee information
                 var customer = await _context.Customers.FindAsync(appointment.CustomerId);
                 var service = await _context.Services.FindAsync(appointment.ServiceId);
+                var employee = await _context.Employees.FindAsync(appointment.EmployeeId);
 
-                if (customer == null || service == null)
+                if (customer == null || service == null || employee == null)
                 {
-                    ModelState.AddModelError("", "Müşteri veya hizmet bulunamadı.");
-                    await LoadViewBagData();
+                    ModelState.AddModelError("", "Müşteri, hizmet veya çalışan bulunamadı.");
+                    ViewBag.Customers = await _context.Customers.ToListAsync();
+                    ViewBag.Services = await _context.Services.Where(s => s.IsActive).ToListAsync();
+                    ViewBag.Employees = await _context.Employees.Where(e => e.IsActive).ToListAsync();
+                    return View(appointment);
+                }
+
+                // Check employee availability
+                if (!await IsEmployeeAvailable(appointment.EmployeeId, appointment.AppointmentDate))
+                {
+                    ModelState.AddModelError("", "Seçilen çalışan bu saatte müsait değil. Lütfen başka bir çalışan veya saat seçin.");
+                    ViewBag.Customers = await _context.Customers.ToListAsync();
+                    ViewBag.Services = await _context.Services.Where(s => s.IsActive).ToListAsync();
+                    ViewBag.Employees = await _context.Employees.Where(e => e.IsActive).ToListAsync();
                     return View(appointment);
                 }
 
@@ -196,6 +216,50 @@ namespace BerberSimulasyonu.Controllers
                 .OrderBy(s => s.Category)
                 .ThenBy(s => s.Name)
                 .ToListAsync();
+            
+            ViewBag.Employees = await _context.Employees
+                .Where(e => e.IsActive)
+                .OrderBy(e => e.LastName)
+                .ThenBy(e => e.FirstName)
+                .ToListAsync();
+        }
+
+        // Helper method to check employee availability
+        private async Task<bool> IsEmployeeAvailable(int employeeId, DateTime appointmentDate)
+        {
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if (employee == null || !employee.IsActive) return false;
+
+            // Check working hours
+            var appointmentTime = appointmentDate.TimeOfDay;
+            if (appointmentTime < employee.DefaultWorkStart || appointmentTime > employee.DefaultWorkEnd)
+            {
+                return false;
+            }
+
+            // Check existing appointments
+            var existingAppointments = await _context.Appointments
+                .Where(a => a.EmployeeId == employeeId && 
+                           a.AppointmentDate.Date == appointmentDate.Date &&
+                           !a.IsCompleted)
+                .ToListAsync();
+
+            // Average appointment duration (30 minutes)
+            var averageAppointmentDuration = 30;
+
+            foreach (var appointment in existingAppointments)
+            {
+                var appointmentStartTime = appointment.AppointmentDate;
+                var appointmentEndTime = appointmentStartTime.AddMinutes(averageAppointmentDuration);
+
+                // Check for conflicts
+                if (appointmentDate >= appointmentStartTime && appointmentDate < appointmentEndTime)
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
     }
 }

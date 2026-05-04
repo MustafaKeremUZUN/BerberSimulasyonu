@@ -1,0 +1,181 @@
+@model BerberSimulasyonu.Models.EmployeeApplication
+@{
+    ViewData["Title"] = "Berber Başvurusu";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">🔪 Berberlik Başvuru Formu</h4>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle"></i> @ViewBag.ErrorMessage
+                        </div>
+                    }
+
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Bilgi:</strong> Başvurunuz değerlendirilmek üzere 5 soruluk bir test içermektedir. 
+                        En az 3 soruya doğru cevap vermeniz gerekmektedir. Başarılı başvurular işe alım için değerlendirilecektir.
+                    </div>
+
+                    <form asp-action="Create" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        
+                        <!-- Kişisel Bilgiler -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3"><i class="fas fa-user"></i> Kişisel Bilgiler</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="FirstName" class="form-label">Ad</label>
+                                    <input asp-for="FirstName" class="form-control" required />
+                                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="LastName" class="form-label">Soyad</label>
+                                    <input asp-for="LastName" class="form-control" required />
+                                    <span asp-validation-for="LastName" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="PhoneNumber" class="form-label">Telefon</label>
+                                    <input asp-for="PhoneNumber" class="form-control" type="tel" required />
+                                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="Email" class="form-label">E-posta</label>
+                                    <input asp-for="Email" class="form-control" type="email" />
+                                    <span asp-validation-for="Email" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mesleki Bilgiler -->
+                        <div class="row mb-4">
+                            <div class="col-12">
+                                <h5 class="mb-3"><i class="fas fa-cut"></i> Mesleki Bilgiler</h5>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DesiredPosition" class="form-label">İstediğiniz Pozisyon</label>
+                                    <select asp-for="DesiredPosition" class="form-select">
+                                        <option value="Berber">Berber</option>
+                                        <option value="Usta Berber">Usta Berber</option>
+                                        <option value="Çırak">Çırak</option>
+                                        <option value="Şef Berber">Şef Berber</option>
+                                    </select>
+                                    <span asp-validation-for="DesiredPosition" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label asp-for="DesiredHourlyRate" class="form-label">İstenen Saatlik Ücret (₺)</label>
+                                    <input asp-for="DesiredHourlyRate" class="form-control" type="number" step="0.01" min="0" required />
+                                    <span asp-validation-for="DesiredHourlyRate" class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mb-3">
+                                    <label asp-for="Experience" class="form-label">Deneyimleriniz</label>
+                                    <textarea asp-for="Experience" class="form-control" rows="3" 
+                                              placeholder="Berberlik deneyimlerinizi, çalıştığınız yerleri ve uzman olduğunuz alanları yazınız..."></textarea>
+                                    <span asp-validation-for="Experience" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quiz Section -->
+                        @if (ViewBag.Questions != null)
+                        {
+                            <div class="row mb-4">
+                                <div class="col-12">
+                                    <h5 class="mb-3"><i class="fas fa-question-circle"></i> Mesleki Yeterlilik Testi</h5>
+                                    <p class="text-muted">Aşağıdaki sorulara lütfen dikkatlice cevap veriniz. En az 3 doğru cevap gereklidir.</p>
+                                </div>
+                                
+                                @foreach (var question in ViewBag.Questions)
+                                {
+                                    <div class="col-12 mb-4">
+                                        <div class="card border-secondary">
+                                            <div class="card-header bg-light">
+                                                <h6 class="mb-0">
+                                                    <span class="badge bg-primary me-2">Soru @question.Id</span>
+                                                    @question.Question
+                                                </h6>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        @foreach (var option in new[] { 
+                                                            new { Key = "A", Value = question.OptionA },
+                                                            new { Key = "B", Value = question.OptionB } })
+                                                        {
+                                                            <div class="form-check mb-2">
+                                                                <input class="form-check-input" type="radio" 
+                                                                       name="quizAnswers[@question.Id]" 
+                                                                       value="@option.Key" 
+                                                                       id="q@(question.Id)_@option.Key" required>
+                                                                <label class="form-check-label" for="q@(question.Id)_@option.Key">
+                                                                    <strong>@option.Key)</strong> @option.Value
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        @foreach (var option in new[] { 
+                                                            new { Key = "C", Value = question.OptionC },
+                                                            new { Key = "D", Value = question.OptionD } })
+                                                        {
+                                                            <div class="form-check mb-2">
+                                                                <input class="form-check-input" type="radio" 
+                                                                       name="quizAnswers[@question.Id]" 
+                                                                       value="@option.Key" 
+                                                                       id="q@(question.Id)_@option.Key" required>
+                                                                <label class="form-check-label" for="q@(question.Id)_@option.Key">
+                                                                    <strong>@option.Key)</strong> @option.Value
+                                                                </label>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-tag"></i> Kategori: @question.Category | 
+                                                    <i class="fas fa-signal"></i> Zorluk: @(question.Difficulty == 1 ? "Kolay" : "Orta")
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-between">
+                            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Ana Sayfa
+                            </a>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane"></i> Başvuruyu Gönder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

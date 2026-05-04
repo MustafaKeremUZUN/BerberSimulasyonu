@@ -1,0 +1,200 @@
+@model BerberSimulasyonu.Models.Employee
+@{
+    ViewData["Title"] = "Çalışan Programı";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">@Model.FullName - Günlük Program</h4>
+                        <div>
+                            <span class="badge bg-info me-2">@Model.Position</span>
+                            <span class="badge bg-success">Aktif</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <!-- Çalışma Durumu -->
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">İşe Başlangıç</h6>
+                                    @if (Model.WorkStartTime.HasValue && Model.WorkStartTime.Value.Date == DateTime.Today)
+                                    {
+                                        <h4 class="text-success">@Model.WorkStartTime.Value.ToString("HH:mm")</h4>
+                                        <small class="text-muted">Bugün başladı</small>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="text-muted">--:--</h4>
+                                        <small class="text-muted">Henüz başlamadı</small>
+                                        <form asp-action="CheckIn" asp-route-id="@Model.Id" method="post" class="mt-2">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-sign-in-alt"></i> İşe Başla
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">İşten Çıkış</h6>
+                                    @if (Model.WorkEndTime.HasValue && Model.WorkEndTime.Value.Date == DateTime.Today)
+                                    {
+                                        <h4 class="text-danger">@Model.WorkEndTime.Value.ToString("HH:mm")</h4>
+                                        <small class="text-muted">Bugün çıktı</small>
+                                    }
+                                    else
+                                    {
+                                        <h4 class="text-muted">--:--</h4>
+                                        <small class="text-muted">Henüz çıkmadı</small>
+                                        @if (Model.WorkStartTime.HasValue && Model.WorkStartTime.Value.Date == DateTime.Today)
+                                        {
+                                            <form asp-action="CheckOut" asp-route-id="@Model.Id" method="post" class="mt-2">
+                                                <button type="submit" class="btn btn-danger btn-sm">
+                                                    <i class="fas fa-sign-out-alt"></i> İşten Çık
+                                                </button>
+                                            </form>
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card bg-light">
+                                <div class="card-body text-center">
+                                    <h6 class="card-title">Çalışma Saatleri</h6>
+                                    <h4 class="text-primary">@Model.DefaultWorkStart.ToString(@"hh\:mm") - @Model.DefaultWorkEnd.ToString(@"hh\:mm")</h4>
+                                    <small class="text-muted">Standart program</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bugünkü Randevular -->
+                    <div class="row">
+                        <div class="col-12">
+                            <h5 class="mb-3">Bugünkü Randevular (@DateTime.Today.ToString("dd.MM.yyyy"))</h5>
+                            @if (Model.Appointments != null && Model.Appointments.Any(a => a.AppointmentDate.Date == DateTime.Today))
+                            {
+                                var todayAppointments = Model.Appointments
+                                    .Where(a => a.AppointmentDate.Date == DateTime.Today)
+                                    .OrderBy(a => a.AppointmentDate)
+                                    .ToList();
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Saat</th>
+                                                <th>Müşteri</th>
+                                                <th>Hizmet</th>
+                                                <th>Ücret</th>
+                                                <th>Durum</th>
+                                                <th>İşlemler</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var appointment in todayAppointments)
+                                            {
+                                                <tr>
+                                                    <td>@appointment.AppointmentDate.ToString("HH:mm")</td>
+                                                    <td>
+                                                        <strong>@appointment.Customer.FullName</strong><br>
+                                                        <small class="text-muted">@appointment.Customer.PhoneNumber</small>
+                                                    </td>
+                                                    <td>@appointment.Service.Name</td>
+                                                    <td>@appointment.FinalPrice.ToString("C")</td>
+                                                    <td>
+                                                        @if (appointment.IsCompleted)
+                                                        {
+                                                            <span class="badge bg-success">Tamamlandı</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <span class="badge bg-warning">Beklemede</span>
+                                                        }
+                                                    </td>
+                                                    <td>
+                                                        @if (!appointment.IsCompleted)
+                                                        {
+                                                            <a asp-controller="Appointment" asp-action="Complete" asp-route-id="@appointment.Id" 
+                                                               class="btn btn-success btn-sm">
+                                                                <i class="fas fa-check"></i> Tamamla
+                                                            </a>
+                                                        }
+                                                        <a asp-controller="Appointment" asp-action="Details" asp-route-id="@appointment.Id" 
+                                                           class="btn btn-info btn-sm">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- İstatistikler -->
+                                <div class="row mt-3">
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h6>Toplam Randevu</h6>
+                                                <h4 class="text-primary">@todayAppointments.Count</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h6>Tamamlanan</h6>
+                                                <h4 class="text-success">@todayAppointments.Count(a => a.IsCompleted)</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h6>Bekleyen</h6>
+                                                <h4 class="text-warning">@todayAppointments.Count(a => !a.IsCompleted)</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="card bg-light">
+                                            <div class="card-body text-center">
+                                                <h6>Gün Kazancı</h6>
+                                                <h4 class="text-success">@todayAppointments.Where(a => a.IsCompleted).Sum(a => a.FinalPrice).ToString("C")</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Bugün için randevu bulunmuyor.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Detaylara Geri Dön
+                        </a>
+                        <a asp-action="Index" class="btn btn-primary ms-2">
+                            <i class="fas fa-list"></i> Çalışan Listesi
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

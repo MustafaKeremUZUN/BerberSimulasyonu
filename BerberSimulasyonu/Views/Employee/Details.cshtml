@@ -1,0 +1,190 @@
+@model BerberSimulasyonu.Models.Employee
+@{
+    ViewData["Title"] = "Çalışan Detayları";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">@Model.FullName - Çalışan Detayları</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h6>Genel Bilgiler</h6>
+                            <table class="table table-sm">
+                                <tr>
+                                    <td><strong>Ad Soyad:</strong></td>
+                                    <td>@Model.FullName</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Pozisyon:</strong></td>
+                                    <td>@Model.Position</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Telefon:</strong></td>
+                                    <td>@Model.PhoneNumber</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>E-posta:</strong></td>
+                                    <td>@Model.Email</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>İşe Başlama:</strong></td>
+                                    <td>@Model.HireDate.ToString("dd.MM.yyyy")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Saatlik Ücret:</strong></td>
+                                    <td>@Model.HourlyRate.ToString("C")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Çalışma Saatleri:</strong></td>
+                                    <td>@Model.DefaultWorkStart.ToString(@"hh\:mm") - @Model.DefaultWorkEnd.ToString(@"hh\:mm")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Durum:</strong></td>
+                                    <td>
+                                        @if (Model.IsActive)
+                                        {
+                                            <span class="badge bg-success">Aktif</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Pasif</span>
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Günlük Durum</h6>
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    @if (Model.WorkStartTime.HasValue && Model.WorkStartTime.Value.Date == DateTime.Today)
+                                    {
+                                        <p class="mb-2">
+                                            <strong>İşe Başlangıç:</strong><br>
+                                            <span class="text-success">@Model.WorkStartTime.Value.ToString("HH:mm")</span>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-2">
+                                            <strong>İşe Başlangıç:</strong><br>
+                                            <span class="text-muted">Henüz başlamadı</span>
+                                        </p>
+                                    }
+
+                                    @if (Model.WorkEndTime.HasValue && Model.WorkEndTime.Value.Date == DateTime.Today)
+                                    {
+                                        <p class="mb-2">
+                                            <strong>İşten Çıkış:</strong><br>
+                                            <span class="text-danger">@Model.WorkEndTime.Value.ToString("HH:mm")</span>
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="mb-2">
+                                            <strong>İşten Çıkış:</strong><br>
+                                            <span class="text-muted">Henüz çıkmadı</span>
+                                        </p>
+                                    }
+
+                                    @if (!Model.WorkStartTime.HasValue || Model.WorkStartTime.Value.Date != DateTime.Today)
+                                    {
+                                        <form asp-action="CheckIn" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-sign-in-alt"></i> İşe Başla
+                                            </button>
+                                        </form>
+                                    }
+                                    else if (!Model.WorkEndTime.HasValue || Model.WorkEndTime.Value.Date != DateTime.Today)
+                                    {
+                                        <form asp-action="CheckOut" asp-route-id="@Model.Id" method="post" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-sign-out-alt"></i> İşten Çık
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Geri Dön
+                        </a>
+                        <div>
+                            <a asp-action="Schedule" asp-route-id="@Model.Id" class="btn btn-info me-2">
+                                <i class="fas fa-calendar"></i> Program
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                                <i class="fas fa-edit"></i> Düzenle
+                            </a>
+                            <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                                <i class="fas fa-trash"></i> Sil
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Randevu Geçmişi -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="mb-0">Randevu Geçmişi</h5>
+                </div>
+                <div class="card-body">
+                    @if (Model.Appointments != null && Model.Appointments.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Tarih</th>
+                                        <th>Müşteri</th>
+                                        <th>Hizmet</th>
+                                        <th>Ücret</th>
+                                        <th>Durum</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var appointment in Model.Appointments.OrderByDescending(a => a.AppointmentDate))
+                                    {
+                                        <tr>
+                                            <td>@appointment.AppointmentDate.ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@appointment.Customer.FullName</td>
+                                            <td>@appointment.Service.Name</td>
+                                            <td>@appointment.FinalPrice.ToString("C")</td>
+                                            <td>
+                                                @if (appointment.IsCompleted)
+                                                {
+                                                    <span class="badge bg-success">Tamamlandı</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-warning">Beklemede</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">Henüz randevu kaydı bulunmuyor.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

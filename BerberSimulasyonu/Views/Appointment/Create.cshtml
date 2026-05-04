@@ -58,6 +58,24 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
+                                    <label asp-for="EmployeeId" class="form-label">Çalışan</label>
+                                    <select asp-for="EmployeeId" class="form-select" id="employeeSelect">
+                                        <option value="">Çalışan Seçin...</option>
+                                        @foreach (var employee in ViewBag.Employees)
+                                        {
+                                            <option value="@employee.Id" data-work-start="@employee.DefaultWorkStart" data-work-end="@employee.DefaultWorkEnd">
+                                                @employee.FullName - @employee.Position
+                                            </option>
+                                        }
+                                    </select>
+                                    <span asp-validation-for="EmployeeId" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
                                     <label asp-for="AppointmentDate" class="form-label">Randevu Tarihi</label>
                                     <input asp-for="AppointmentDate" class="form-control" type="datetime-local" />
                                     <span asp-validation-for="AppointmentDate" class="text-danger"></span>
@@ -147,6 +165,30 @@
             }
             
             $('#customerSelect, #serviceSelect').change(calculatePrice);
+            
+            // Check employee availability when employee or date changes
+            $('#employeeSelect, #AppointmentDate').change(checkEmployeeAvailability);
+            
+            function checkEmployeeAvailability() {
+                var employeeId = $('#employeeSelect').val();
+                var appointmentDate = $('#AppointmentDate').val();
+                
+                if (employeeId && appointmentDate) {
+                    var employeeOption = $('#employeeSelect option:selected');
+                    var workStart = employeeOption.data('work-start');
+                    var workEnd = employeeOption.data('work-end');
+                    var appointmentTime = new Date(appointmentDate).toTimeString().slice(0,5);
+                    
+                    // Basic working hours check
+                    if (appointmentTime < workStart || appointmentTime > workEnd) {
+                        $('#employeeSelect').addClass('is-invalid');
+                        $('#employeeSelect').after('<div class="invalid-feedback">Seçilen çalışan bu saatte çalışmıyor (Çalışma saatleri: ' + workStart + ' - ' + workEnd + ')</div>');
+                    } else {
+                        $('#employeeSelect').removeClass('is-invalid');
+                        $('#employeeSelect').next('.invalid-feedback').remove();
+                    }
+                }
+            }
             
             // Set default datetime to current time
             var now = new Date();
