@@ -23,6 +23,9 @@ namespace BerberSimulasyonu.Models
         
         public bool IsActive { get; set; } = true;
         
+        [StringLength(500)]
+        public string? ImageUrl { get; set; }
+        
         // Navigation property for appointments
         public virtual ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
     }

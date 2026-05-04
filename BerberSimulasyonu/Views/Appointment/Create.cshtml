@@ -41,15 +41,35 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label asp-for="ServiceId" class="form-label">Hizmet</label>
-                                    <select asp-for="ServiceId" class="form-select" id="serviceSelect">
-                                        <option value="">Hizmet Seçin...</option>
+                                    <div class="row" id="serviceGrid">
                                         @foreach (var service in ViewBag.Services)
                                         {
-                                            <option value="@service.Id" data-price="@service.Price" data-category="@service.Category">
-                                                @service.Name - @service.Price.ToString("C") (@service.Category)
-                                            </option>
+                                            <div class="col-md-6 mb-3">
+                                                <div class="card service-card @(service.Category == "Saç" ? "hair-service" : "beard-service")" data-service-id="@service.Id" data-price="@service.Price" data-category="@service.Category">
+                                                    <div class="row g-0">
+                                                        <div class="col-md-4">
+                                                            <img src="@service.ImageUrl" class="img-fluid rounded-start" alt="@service.Name" style="height: 120px; object-fit: cover;">
+                                                        </div>
+                                                        <div class="col-md-8">
+                                                            <div class="card-body">
+                                                                <h6 class="card-title">@service.Name</h6>
+                                                                <p class="card-text small">@service.Description</p>
+                                                                <p class="card-text">
+                                                                    <strong>@service.Price.ToString("C")</strong>
+                                                                    <span class="badge bg-secondary ms-2">@service.Category</span>
+                                                                </p>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input service-radio" type="radio" name="serviceRadio" value="@service.Id" id="service_@service.Id">
+                                                                    <label class="form-check-label" for="service_@service.Id">Seç</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         }
-                                    </select>
+                                    </div>
+                                    <input type="hidden" asp-for="ServiceId" id="serviceSelect" />
                                     <span asp-validation-for="ServiceId" class="text-danger"></span>
                                 </div>
                             </div>
@@ -106,6 +126,40 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <style>
+        .service-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .service-card.selected {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        
+        .hair-service {
+            border-left: 4px solid #6f42c1;
+        }
+        
+        .beard-service {
+            border-left: 4px solid #fd7e14;
+        }
+        
+        .service-radio {
+            display: none;
+        }
+        
+        .service-card.selected .service-radio + .form-check-label {
+            color: #0d6efd;
+            font-weight: bold;
+        }
+    </style>
     <script>
         $(document).ready(function() {
             function calculatePrice() {
@@ -114,9 +168,9 @@
                 
                 if (customerId && serviceId) {
                     var customerOption = $('#customerSelect option:selected');
-                    var serviceOption = $('#serviceSelect option:selected');
+                    var serviceCard = $('.service-card[data-service-id="' + serviceId + '"]');
                     var visitCount = parseInt(customerOption.data('visit-count'));
-                    var originalPrice = parseFloat(serviceOption.data('price'));
+                    var originalPrice = parseFloat(serviceCard.data('price'));
                     
                     var discountPercentage = 0;
                     if (visitCount >= 31) {
@@ -146,7 +200,26 @@
                 }
             }
             
-            $('#customerSelect, #serviceSelect').change(calculatePrice);
+            // Handle service card selection
+            $('.service-card').click(function() {
+                $('.service-card').removeClass('selected');
+                $(this).addClass('selected');
+                var serviceId = $(this).data('service-id');
+                $('#serviceSelect').val(serviceId);
+                $(this).find('.service-radio').prop('checked', true);
+                calculatePrice();
+            });
+            
+            // Handle radio button changes
+            $('.service-radio').change(function() {
+                $('.service-card').removeClass('selected');
+                $(this).closest('.service-card').addClass('selected');
+                var serviceId = $(this).val();
+                $('#serviceSelect').val(serviceId);
+                calculatePrice();
+            });
+            
+            $('#customerSelect').change(calculatePrice);
             
             // Set default datetime to current time
             var now = new Date();
