@@ -4,6 +4,7 @@ using BerberSimulasyonu.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BerberSimulasyonu.Migrations
 {
     [DbContext(typeof(BerberDbContext))]
-    partial class BerberDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260504101311_UpdateServicesWithRealisticPrices")]
+    partial class UpdateServicesWithRealisticPrices
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -162,6 +165,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 1,
                             Category = "Saç",
                             Description = "Makine veya makasla standart saç kesimi",
+                            ImageUrl = "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Klasik Saç Kesimi",
                             Price = 100m
@@ -171,6 +175,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 2,
                             Category = "Saç",
                             Description = "Trend ve modern saç kesim teknikleri",
+                            ImageUrl = "https://images.pexels.com/photos/3993444/pexels-photo-3993444.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Modern Saç Kesimi",
                             Price = 150m
@@ -180,6 +185,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 3,
                             Category = "Saç",
                             Description = "Tek renk tam saç boyama hizmeti",
+                            ImageUrl = "https://images.pexels.com/photos/1239288/pexels-photo-1239288.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Saç Boyama",
                             Price = 400m
@@ -189,6 +195,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 4,
                             Category = "Sakal",
                             Description = "Sakal şekillendirme ve tıraş",
+                            ImageUrl = "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Klasik Sakal Kesimi",
                             Price = 80m
@@ -198,6 +205,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 5,
                             Category = "Sakal",
                             Description = "Jilet ile profesyonel sakal traşı",
+                            ImageUrl = "https://images.pexels.com/photos/428340/pexels-photo-428340.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Sakal Traşı",
                             Price = 60m
@@ -207,6 +215,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 6,
                             Category = "Sakal",
                             Description = "Sakal ve bıyık boyama hizmeti",
+                            ImageUrl = "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Sakal Boyama",
                             Price = 150m
@@ -216,6 +225,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 7,
                             Category = "Saç",
                             Description = "Saç kesimi + sakal kesimi kombin paketi",
+                            ImageUrl = "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Saç ve Sakal Paket",
                             Price = 160m
@@ -225,6 +235,7 @@ namespace BerberSimulasyonu.Migrations
                             Id = 8,
                             Category = "Sakal",
                             Description = "Rahatlatıcı ve yenileyici yüz masajı",
+                            ImageUrl = "https://images.pexels.com/photos/3812842/pexels-photo-3812842.jpeg?w=400&h=300&fit=crop",
                             IsActive = true,
                             Name = "Yüz Masajı",
                             Price = 100m

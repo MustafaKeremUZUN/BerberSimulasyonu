@@ -63,14 +63,14 @@ namespace BerberSimulasyonu.Data
 
             // Seed initial services
             modelBuilder.Entity<Service>().HasData(
-                new Service { Id = 1, Name = "Klasik Saç Kesimi", Description = "Makine veya makasla standart saç kesimi", Price = 100, Category = "Saç", IsActive = true, ImageUrl = "https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 2, Name = "Modern Saç Kesimi", Description = "Trend ve modern saç kesim teknikleri", Price = 150, Category = "Saç", IsActive = true, ImageUrl = "https://images.pexels.com/photos/3993444/pexels-photo-3993444.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 3, Name = "Saç Boyama", Description = "Tek renk tam saç boyama hizmeti", Price = 400, Category = "Saç", IsActive = true, ImageUrl = "https://images.pexels.com/photos/1239288/pexels-photo-1239288.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 4, Name = "Klasik Sakal Kesimi", Description = "Sakal şekillendirme ve tıraş", Price = 80, Category = "Sakal", IsActive = true, ImageUrl = "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 5, Name = "Sakal Traşı", Description = "Jilet ile profesyonel sakal traşı", Price = 60, Category = "Sakal", IsActive = true, ImageUrl = "https://images.pexels.com/photos/428340/pexels-photo-428340.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 6, Name = "Sakal Boyama", Description = "Sakal ve bıyık boyama hizmeti", Price = 150, Category = "Sakal", IsActive = true, ImageUrl = "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 7, Name = "Saç ve Sakal Paket", Description = "Saç kesimi + sakal kesimi kombin paketi", Price = 160, Category = "Saç", IsActive = true, ImageUrl = "https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?w=400&h=300&fit=crop" },
-                new Service { Id = 8, Name = "Yüz Masajı", Description = "Rahatlatıcı ve yenileyici yüz masajı", Price = 100, Category = "Sakal", IsActive = true, ImageUrl = "https://images.pexels.com/photos/3812842/pexels-photo-3812842.jpeg?w=400&h=300&fit=crop" }
+                new Service { Id = 1, Name = "Klasik Saç Kesimi", Description = "Makine veya makasla standart saç kesimi", Price = 100, Category = "Saç", IsActive = true },
+                new Service { Id = 2, Name = "Modern Saç Kesimi", Description = "Trend ve modern saç kesim teknikleri", Price = 150, Category = "Saç", IsActive = true },
+                new Service { Id = 3, Name = "Saç Boyama", Description = "Tek renk tam saç boyama hizmeti", Price = 400, Category = "Saç", IsActive = true },
+                new Service { Id = 4, Name = "Klasik Sakal Kesimi", Description = "Sakal şekillendirme ve tıraş", Price = 80, Category = "Sakal", IsActive = true },
+                new Service { Id = 5, Name = "Sakal Traşı", Description = "Jilet ile profesyonel sakal traşı", Price = 60, Category = "Sakal", IsActive = true },
+                new Service { Id = 6, Name = "Sakal Boyama", Description = "Sakal ve bıyık boyama hizmeti", Price = 150, Category = "Sakal", IsActive = true },
+                new Service { Id = 7, Name = "Saç ve Sakal Paket", Description = "Saç kesimi + sakal kesimi kombin paketi", Price = 160, Category = "Saç", IsActive = true },
+                new Service { Id = 8, Name = "Yüz Masajı", Description = "Rahatlatıcı ve yenileyici yüz masajı", Price = 100, Category = "Sakal", IsActive = true }
             );
         }
     }
